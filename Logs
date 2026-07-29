@@ -1,0 +1,19 @@
+from datetime import datetime
+
+LOG_FILE = "blocked_log.txt"
+
+def write_log(action, website):
+
+    time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    with open(LOG_FILE, "a") as file:
+        file.write(f"{time} | {action} | {website}\n")
+
+
+def read_logs():
+
+    try:
+        with open(LOG_FILE, "r") as file:
+            return file.readlines()
+    except FileNotFoundError:
+        return []
