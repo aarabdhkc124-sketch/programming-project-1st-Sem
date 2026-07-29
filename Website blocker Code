@@ -1,0 +1,135 @@
+import tkinter as tk
+from tkinter import messagebox
+
+from Block import block_website, unblock_website
+from Logs import write_log, read_logs
+
+
+def block():
+
+    website = entry.get().strip()
+
+    if website == "":
+        messagebox.showerror("Error", "Enter website")
+        return
+
+    if block_website(website):
+        write_log("Blocked", website)
+        update_history()
+        messagebox.showinfo("Success", "Website Blocked")
+
+    else:
+        messagebox.showwarning("Warning", "Already Blocked")
+
+
+def unblock():
+
+    website = entry.get().strip()
+
+    if website == "":
+        messagebox.showerror("Error", "Enter website")
+        return
+
+    unblock_website(website)
+    write_log("Unblocked", website)
+    update_history()
+
+    messagebox.showinfo("Success", "Website Unblocked")
+
+
+def update_history():
+
+    history.delete(0, tk.END)
+
+    logs = read_logs()
+
+    for log in logs:
+        history.insert(tk.END, log.strip())
+
+
+root = tk.Tk()
+root.title("Website Blocker")
+root.geometry("650x500")
+root.resizable(False, False)
+root.configure(bg="#f0f4f8")
+
+# Title
+title = tk.Label(
+    root,
+    text="Website Blocker",
+    font=("Arial", 20, "bold"),
+    bg="#f0f4f8",
+    fg="#1f4e79"
+)
+title.pack(pady=15)
+
+# Input Frame
+input_frame = tk.Frame(root, bg="#f0f4f8")
+input_frame.pack(pady=10)
+
+tk.Label(
+    input_frame,
+    text="Website:",
+    font=("Arial", 11),
+    bg="#f0f4f8"
+).grid(row=0, column=0, padx=5)
+
+entry = tk.Entry(input_frame, width=40, font=("Arial", 11))
+entry.grid(row=0, column=1, padx=5)
+
+# Button Frame
+button_frame = tk.Frame(root, bg="#f0f4f8")
+button_frame.pack(pady=15)
+
+block_btn = tk.Button(
+    button_frame,
+    text="Block Website",
+    command=block,
+    bg="#d9534f",
+    fg="white",
+    width=15,
+    font=("Arial", 10, "bold")
+)
+block_btn.grid(row=0, column=0, padx=10)
+
+unblock_btn = tk.Button(
+    button_frame,
+    text="Unblock Website",
+    command=unblock,
+    bg="#5cb85c",
+    fg="white",
+    width=15,
+    font=("Arial", 10, "bold")
+)
+unblock_btn.grid(row=0, column=1, padx=10)
+
+# Log Title
+tk.Label(
+    root,
+    text="Activity Log",
+    font=("Arial", 13, "bold"),
+    bg="#f0f4f8"
+).pack(pady=10)
+
+# Frame for Listbox + Scrollbar
+log_frame = tk.Frame(root)
+log_frame.pack(padx=20, pady=5)
+
+scrollbar = tk.Scrollbar(log_frame)
+
+history = tk.Listbox(
+    log_frame,
+    width=75,
+    height=15,
+    font=("Consolas", 10),
+    yscrollcommand=scrollbar.set
+)
+
+scrollbar.config(command=history.yview)
+
+history.pack(side=tk.LEFT)
+scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+update_history()
+
+root.mainloop()
